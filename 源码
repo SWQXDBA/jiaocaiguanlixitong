@@ -1,0 +1,373 @@
+#include<iostream>
+#include<string>
+#include<fstream>
+#include<cstdio>
+using namespace std;
+int option;
+enum//增加 2删除 3查找 4修改 5按名字插入 6问询链表长度
+{
+    增加 = 1,
+    删除 = 2,
+    查找 = 3,
+    修改 = 4,
+    查询全部数据 = 7,
+    删除所有数据 = 8,
+    退出 = 0
+
+};
+
+class Book
+
+{
+public:
+    Book(const string &number, const string &name, int count, double price, const string &subject, const string &author,
+         const string &publisher, const string &comments) : number(number), name(name), count(count), price(price),
+                                                            subject(subject), author(author), publisher(publisher),
+                                                            comments(comments) {
+        this->Next = NULL;
+    }
+    Book() {
+        cout<<"请输入图书编号"<<endl;
+        cin>>number;
+        cout<<"请输入图书名字"<<endl;
+        cin>>name;
+        cout<<"请输入图书数量"<<endl;
+        cin>>count;
+        cout<<"请输入图书价格"<<endl;
+        cin>>price;
+        cout<<"请输入图书所属专业"<<endl;
+        cin>>subject;
+        cout<<"请输入图书作者"<<endl;
+        cin>>author;
+        cout<<"请输入出版社"<<endl;
+        cin>>publisher;
+        cout<<"请输入备注"<<endl;
+        cin>>comments;
+        this->Next = NULL;
+    }
+
+    friend ostream &operator<<(ostream &os, const Book &book) {
+        if(&book==NULL)
+        os<<"没有这本书！";
+        else
+        os << "number: " << book.number << " name: " << book.name << " count: " << book.count << " price: "
+           << book.price << " subject: " << book.subject << " author: " << book.author << " publisher: "
+           << book.publisher << " comments: " << book.comments;
+        return os;
+    }
+
+    string number;
+    string name;
+    int count;
+    double price;
+    string subject;
+    string author;
+    string publisher;
+    string comments;
+    Book* Next;
+};
+class Nodelist
+{
+public:
+    Nodelist();
+    void addbook();
+    void Nodelist:: addbook(const string &number, const string &name, int count, double price, const string &subject, const string &author,
+                            const string &publisher, const string &comments);
+    void moveEnd();
+    void editBook();
+    friend ostream &operator<<(ostream &os, const Nodelist &nodelist);
+    Book *searchNumber();
+
+    void deleteBook();
+    void cleanNodelist();
+
+    int getlenth()
+    {
+        int num = 1;
+        if (!Start)
+            return 0;
+        Book *temp = Start;
+        while (temp != End)
+        {
+            temp = temp->Next;
+            num++;
+        }
+
+        return num;
+
+    }
+    Book* Start;
+    Book* End;
+    int counts;
+
+
+};
+void Nodelist::deleteBook()
+{
+    Book *temp = searchNumber();
+    if(temp==NULL)
+        cout<<*temp;
+    else
+    {
+        Book *temp2=temp->Next;
+        temp->Next=temp2->Next;
+        if(temp2==this->End)
+            this->End=temp;
+        delete temp2;
+        cout<<"删除成功！"<<endl;
+        this->counts--;
+    }
+}
+//void Nodelist:: addbook(const string &number, const string &name, int count, double price, const string &subject, const string &author,
+//                        const string &publisher, const string &comments)
+//{
+//    Book *newbook=new Book(number,name,count,  price,subject, author,publisher, comments);
+//    if(this->End==NULL)
+//    {
+//
+//        this->Start->Next=newbook;
+//        this->End=newbook;
+//        newbook->Next=NULL;
+//
+//    }
+//    else
+//    {
+//        this->End->Next=newbook;
+//
+//        this->End=newbook;
+//
+//    }
+//    this->counts++;
+//
+//}
+void Nodelist:: addbook(){
+    Book *newbook=new Book();
+
+    if(this->End==NULL)
+    {
+
+        this->Start->Next=newbook;
+        this->End=newbook;
+        newbook->Next=NULL;
+
+    }
+    else
+    {
+        this->End->Next=newbook;
+
+        this->End=newbook;
+
+    }
+    this->counts++;
+
+
+}
+
+ostream &operator<<(ostream &os, const Nodelist &nodelist) {
+    Book *temp=nodelist.Start;
+    while(temp->Next)
+    {
+        os<<*(temp->Next)<<endl;
+        temp=temp->Next;
+
+    }
+    if(nodelist.Start->Next==NULL)
+        os<<"无数据"<<endl;
+    return os;
+}
+
+Nodelist::Nodelist() {
+    string ch="0";
+    Book *newbook=new Book(ch,ch,0,0,ch,ch,ch,ch);
+    this->Start=newbook;
+    this->End=NULL;
+    this->counts=0;
+}
+//1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 1 3 3 3 3 3 3 3 3
+Book *Nodelist::searchNumber() {
+    string num;
+    int aply;
+    cout<<"请输入查找凭据：1编号，2名称，3专业"<<endl;
+    cin>>aply;
+    while(1)
+    {
+        if(aply>=1&&aply<=3)
+        {
+            cout<<"请输入要查找的教材";
+            switch(aply)
+            {
+                case 1:cout<<"编号"<<endl;break;
+                case 2:cout<<"名称"<<endl;break;
+                case 3:cout<<"专业"<<endl;break;
+            }
+            break;
+
+        }
+        else
+            cout<<"操作错误！"<<endl;
+    }
+    cin>>num;
+    Book *temp=this->Start;
+    Book *firstFind=temp;
+    int findcount=0;
+    while(temp->Next)
+    {
+        switch(aply)
+        {
+            case 1: if(temp->Next->number==num)
+                {
+                if(findcount==0)
+                    firstFind=temp;
+                    cout<<*(temp->Next)<<endl;
+                    findcount++;
+                };break;
+            case 2: if(temp->Next->name==num)
+                {
+                    if(findcount==0)
+                        firstFind=temp;
+                    cout<<*(temp->Next)<<endl;
+                    findcount++;
+                };break;
+            case 3: if(temp->Next->subject==num)
+                {
+                    if(findcount==0)
+                        firstFind=temp;
+                    cout<<*(temp->Next)<<endl;
+                    findcount++;
+                };break;
+        }
+
+        temp=temp->Next;
+    }
+    if(findcount>1)
+    {
+        cout<<"找到多个数据！请输入:1继续查找 0结束查找"<<endl;
+        int option =0;
+                cin>>option;
+                if(option<0||option>1)
+                {
+                    cout<<"输入错误，查找终止！"<<endl;
+                    return NULL;
+                }
+                else
+                {
+                    return searchNumber();
+                }
+    }
+
+    return firstFind;
+}
+
+void Nodelist::editBook() {
+Book *temp = searchNumber();
+if(temp==NULL)
+{
+    cout<<*temp;
+    return ;
+}
+else
+{
+    cout<<"已经找到要修改的信息！"<<endl;
+    cout<<*temp<<endl;
+    Book *newbook =new Book();
+    newbook->Next=temp->Next->Next;
+    delete temp->Next;
+    temp->Next=newbook;
+    cout<<"修改成功"<<endl;
+}
+
+}
+
+void Nodelist::cleanNodelist() {
+while(this->counts>0)
+    moveEnd();
+}
+
+void Nodelist::moveEnd() {
+    if(this->counts==0)
+        return;
+    Book *temp = this->Start;
+    if(temp->Next==NULL)
+      return;
+
+    else
+    {
+        while(temp->Next!=this->End)
+            temp=temp->Next;
+
+        delete temp->Next;
+        this->End=temp;
+        temp->Next=NULL;
+        this->counts--;
+        if(this->counts==0)
+            this->End=NULL;
+    }
+}
+
+
+void test()
+{
+    Nodelist *node = new Nodelist;
+    node->addbook();
+    node->addbook();
+    cout<<*node<<endl;
+
+
+}
+int main() {
+    // test();
+    cout << "################################################" << endl;
+    cout << "####################教材管理程序##################" << endl;
+    cout << "################################################" << endl << endl;
+    cout << "################################################" << endl;
+    cout << "#################BY软件工程 叶书畅#################" << endl;
+    cout << "################################################" << endl << endl;
+//    cout << " 支持自定义无限数量的额外科目，以供拓展，默认提供英语，数学的成绩输入 " << endl;
+//    cout << "您可以自定义科目的名字，但请注意不能超过10个字符" << endl;
+//    cout << "在【按名字插入】功能中，您可以把新的信息录入到任意位置" << endl;
+//    cout << "###############以下内容等待实现#############" << endl;
+//    cout << "按照指定的科目进行排名并打印。从文件读取、保存等操作" << endl;
+//    cout << "排名操作会生成一个新的链表根据需要是否进行替换，或者仅更改输出的顺序 " << endl << endl << endl;
+//
+    Nodelist newBooks;
+//     ifstream F1("C:\\Users\\SWQXDBA2\\Desktop\\test.txt");
+//     if(F1)
+//     {
+//         string number;
+//         string name;
+//         int count;
+//         double price;
+//         string subject;
+//         string author;
+//         string publisher;
+//         string comments;
+//
+//     }
+//
+    cout << "请输入操作：1增加 2删除 3查找 4修改 7查询全部数据 8删除所有数据 0退出" << endl;
+    cin >> option;
+    while (1) {
+        switch (option) {
+            case 增加:
+                newBooks.addbook();
+                break;
+            case 删除:newBooks.deleteBook(); break;
+            case 查找:
+                newBooks.searchNumber();break;
+            case 修改:newBooks.editBook(); break;
+            case 查询全部数据:cout << newBooks;break;
+            case 删除所有数据 :newBooks.cleanNodelist();break;
+            case 退出:return 0;break;
+            default:
+                cout << "输入错误" << endl;
+                break;
+        }
+        cout << "请输入操作：1增加 2删除 3查找 4修改 7查询全部数据 8删除所有数据 0退出" << endl;
+
+        cin >> option;
+        getchar();
+
+
+    }
+    return 0;
+}
